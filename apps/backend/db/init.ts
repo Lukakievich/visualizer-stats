@@ -9,7 +9,7 @@ const pool = new pg.Pool({
   user: process.env.DB_USER || 'postgres',
   password: process.env.DB_PASSWORD || 'postgres',
   host: process.env.DB_HOST || 'localhost',
-  port: process.env.DB_PORT || 5432,
+  port: parseInt(process.env.DB_PORT || '5432'),
   database: process.env.DB_NAME || 'stats_visualizer',
 })
 
@@ -23,7 +23,7 @@ const initDb = async () => {
     console.log('✅ Database tables created successfully')
     await pool.end()
   } catch (error) {
-    console.error('❌ Error initializing database:', error.message)
+    console.error('❌ Error initializing database:', (error as Error).message)
     process.exit(1)
   }
 }
