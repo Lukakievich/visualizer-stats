@@ -51,7 +51,7 @@ export const createMetric = async (
   }
 }
 
-export const deleteMetric = async (id: string): Promise<Metric[]> => {
+export const deleteMetric = async (id: number): Promise<Metric[]> => {
   try {
     const result = await pool.query(
       'DELETE FROM metrics WHERE id = $1 RETURNING *',

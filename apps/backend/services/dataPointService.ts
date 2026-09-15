@@ -7,50 +7,50 @@ interface DataPoint {
   timestamp: Date
 }
 
-interface AddDataPoint {
+interface AddDataPointInput {
   metric_id: number
   value: number
 }
 
 export const getDataPointsByMetric = async (
-  metricId: number,
-  limit = 100,
+  metric_id: number,
+  limit: number = 100,
 ): Promise<DataPoint[]> => {
   try {
     const result = await pool.query(
       'SELECT * FROM data_points WHERE metric_id = $1 ORDER BY timestamp DESC LIMIT $2',
-      [metricId, limit],
+      [metric_id, limit],
     )
-    return result.rows.reverse() // Вернуть в хронологическом порядке
+    return result.rows.reverse()
   } catch (error) {
     throw new Error(`Failed to fetch data points: ${(error as Error).message}`)
   }
 }
 
-export const addDataPoint = async (
-  metricId: number,
-  value: number,
-): Promise<DataPoint[]> => {
-  try {
-    const result = await pool.query(
-      'INSERT INTO data_points (metric_id, value) VALUES ($1, $2) RETURNING *',
-      [metricId, value],
-    )
-    return result.rows[0]
-  } catch (error) {
-    throw new Error(`Failed to add data point: ${(error as Error).message}`)
-  }
-}
-
+// Основная функция - добавляет несколько точек
 export const addDataPoints = async (
-  dataPoints: AddDataPoint[],
+  dataPoints: AddDataPointInput[],
 ): Promise<DataPoint[]> => {
   try {
+    if (dataPoints.length === 0) {
+      return []
+    }
+
+    // Конвертируем массив в SQL VALUES
     const values = dataPoints
-      .map((dp) => `(${dp.metric_id}, ${dp.value})`)
+      .map((_, index) => {
+        const paramIndex1 = index * 2 + 1 // $1, $3, $5...
+        const paramIndex2 = index * 2 + 2 // $2, $4, $6...
+        return `($${paramIndex1}, $${paramIndex2})`
+      })
       .join(',')
+
+    // Раскладываем все значения в плоский массив
+    const params = dataPoints.flatMap((dp) => [dp.metric_id, dp.value])
+
     const result = await pool.query(
       `INSERT INTO data_points (metric_id, value) VALUES ${values} RETURNING *`,
+      params,
     )
     return result.rows
   } catch (error) {
@@ -59,9 +59,8 @@ export const addDataPoints = async (
 }
 
 export const deleteOldDataPoints = async (
-  metricsOlderThanHours = 24,
+  metricsOlderThanHours: number = 24,
 ): Promise<number> => {
-  // Удаляет данные старше N часов (для оптимизации)
   try {
     const result = await pool.query(
       `DELETE FROM data_points WHERE timestamp < NOW() - INTERVAL '${metricsOlderThanHours} hours'`,
