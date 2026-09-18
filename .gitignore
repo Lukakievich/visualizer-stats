@@ -36,3 +36,7 @@ coverage/
 # Misc
 .cache/
 temp/
+
+# Postman
+postman/
+.postman/
