@@ -18,7 +18,7 @@ interface DataPointQuery {
   limit?: string
 }
 
-const router = Router()
+const router: Router = Router()
 
 // GET /api/data-points?metricId=1&limit=100
 router.get(

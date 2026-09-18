@@ -17,7 +17,7 @@ interface MetricQuery {
   dashboardId: string;
 }
 
-const router = Router();
+const router: Router = Router();
 
 // GET /api/metrics?dashboardId=1
 router.get('/', async (
