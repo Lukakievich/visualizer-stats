@@ -76,7 +76,10 @@ router.put(
     next: NextFunction,
   ) => {
     try {
-      const id = parseInt(req.params.id)
+      const id = Number(req.params.id)
+      if (!Number.isInteger(id)) {
+        return res.status(400).json({ error: 'Id must be an integer' })
+      }
       const { name, description } = req.body
 
       const dashboard = await dashboardService.updateDashboard(
@@ -101,7 +104,10 @@ router.delete(
   '/:id',
   async (req: Request<DashboardParams>, res: Response, next: NextFunction) => {
     try {
-      const id = parseInt(req.params.id)
+      const id = Number(req.params.id)
+      if (!Number.isInteger(id)) {
+        return res.status(400).json({ error: 'Id must be an integer' })
+      }
       const dashboard = await dashboardService.deleteDashboard(id)
 
       if (!dashboard) {
