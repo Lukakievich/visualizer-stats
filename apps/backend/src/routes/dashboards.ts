@@ -1,5 +1,6 @@
 import { Router, type Request, type Response, type NextFunction } from 'express'
 import * as dashboardService from '../services/dashboardService.js'
+import { parseId } from '../utils/parseId.js'
 
 interface CreateDashboardBody {
   name: string
@@ -27,7 +28,10 @@ router.get(
   '/:id',
   async (req: Request<DashboardParams>, res: Response, next: NextFunction) => {
     try {
-      const id = parseInt(req.params.id)
+      const id = parseId(req.params.id)
+      if (id === null) {
+        return res.status(400).json({ error: 'Id must be a positive integer' })
+      }
       const dashboard = await dashboardService.getDashboardById(id)
 
       if (!dashboard) {
@@ -76,9 +80,9 @@ router.put(
     next: NextFunction,
   ) => {
     try {
-      const id = Number(req.params.id)
-      if (!Number.isInteger(id)) {
-        return res.status(400).json({ error: 'Id must be an integer' })
+      const id = parseId(req.params.id)
+      if (id === null) {
+        return res.status(400).json({ error: 'Id must be a positive integer' })
       }
       const { name, description } = req.body
 
@@ -104,9 +108,9 @@ router.delete(
   '/:id',
   async (req: Request<DashboardParams>, res: Response, next: NextFunction) => {
     try {
-      const id = Number(req.params.id)
-      if (!Number.isInteger(id)) {
-        return res.status(400).json({ error: 'Id must be an integer' })
+      const id = parseId(req.params.id)
+      if (id === null) {
+        return res.status(400).json({ error: 'Id must be a positive integer' })
       }
       const dashboard = await dashboardService.deleteDashboard(id)
 

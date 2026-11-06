@@ -1,5 +1,6 @@
 import { Router, type Request, type Response, type NextFunction } from 'express'
 import * as metricService from '../services/metricService.js'
+import { parseId } from '../utils/parseId.js'
 
 interface CreateMetricBody {
   dashboardId: number
@@ -49,9 +50,9 @@ router.get(
   '/:id',
   async (req: Request<MetricParams>, res: Response, next: NextFunction) => {
     try {
-      const id = Number(req.params.id)
-      if (!Number.isInteger(id)) {
-        return res.status(400).json({ error: 'Id must be an integer' })
+      const id = parseId(req.params.id)
+      if (id === null) {
+        return res.status(400).json({ error: 'Id must be a positive integer' })
       }
       const metric = await metricService.getMetricById(id)
 
@@ -102,9 +103,9 @@ router.delete(
   '/:id',
   async (req: Request<MetricParams>, res: Response, next: NextFunction) => {
     try {
-      const id = Number(req.params.id)
-      if (!Number.isInteger(id)) {
-        return res.status(400).json({ error: 'Id must be an integer' })
+      const id = parseId(req.params.id)
+      if (id === null) {
+        return res.status(400).json({ error: 'Id must be a positive integer' })
       }
       const metric = await metricService.deleteMetric(id)
 
