@@ -6,6 +6,7 @@ import express, {
   type NextFunction,
 } from 'express'
 import cors from 'cors'
+import { initWebSocket } from './ws/hub.js'
 import dashboardsRouter from './routes/dashboards.js'
 import metricsRouter from './routes/metrics.js'
 import dataPointsRouter from './routes/dataPoints.js'
@@ -62,3 +63,10 @@ app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`)
   console.log(`API available at http://localhost:${PORT}/api`)
 })
+
+const server = app.listen(PORT, () => {
+  console.log(`HTTP: http://localhost:${PORT}`);
+  console.log(`WS:   ws://localhost:${PORT}/ws`);
+});
+
+initWebSocket(server);

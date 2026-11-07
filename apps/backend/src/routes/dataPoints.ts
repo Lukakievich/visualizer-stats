@@ -1,5 +1,6 @@
 import { Router, type Request, type Response, type NextFunction } from 'express'
 import * as dataPointService from '../services/dataPointService.js'
+import { broadcastDataPoints } from '../ws/hub.js'
 
 interface AddDataPointBody {
   metric_id: number
@@ -62,6 +63,18 @@ router.post(
       }
 
       const result = await dataPointService.addDataPoints(dataPoints)
+
+      // группируем по метрике
+      const byMetric = new Map<number, typeof result>()
+      for (const p of result) {
+        const list = byMetric.get(p.metric_id) ?? []
+        list.push(p)
+        byMetric.set(p.metric_id, list)
+      }
+      for (const [metricId, points] of byMetric) {
+        broadcastDataPoints(metricId, points)
+      }
+
       res.status(201).json(result)
     } catch (error) {
       next(error)
