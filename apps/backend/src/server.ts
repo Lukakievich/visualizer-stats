@@ -49,7 +49,7 @@ app.use(
     const status = error.status ?? error.statusCode ?? 500
 
     if (status >= 500) {
-      console.error('Error:', error)
+      console.error(error)
     }
 
     res.status(status).json({
