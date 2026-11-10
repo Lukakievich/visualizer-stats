@@ -64,7 +64,6 @@ router.post(
 
       const result = await dataPointService.addDataPoints(dataPoints)
 
-      // группируем по метрике
       const byMetric = new Map<number, typeof result>()
       for (const p of result) {
         const list = byMetric.get(p.metric_id) ?? []

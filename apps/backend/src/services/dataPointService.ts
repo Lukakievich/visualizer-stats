@@ -27,7 +27,6 @@ export const getDataPointsByMetric = async (
   }
 }
 
-// Основная функция - добавляет несколько точек
 export const addDataPoints = async (
   dataPoints: AddDataPointInput[],
 ): Promise<DataPoint[]> => {
@@ -36,7 +35,6 @@ export const addDataPoints = async (
       return []
     }
 
-    // Конвертируем массив в SQL VALUES
     const values = dataPoints
       .map((_, index) => {
         const paramIndex1 = index * 2 + 1 // $1, $3, $5...
@@ -45,7 +43,6 @@ export const addDataPoints = async (
       })
       .join(',')
 
-    // Раскладываем все значения в плоский массив
     const params = dataPoints.flatMap((dp) => [dp.metric_id, dp.value])
 
     const result = await pool.query(

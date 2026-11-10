@@ -6,7 +6,6 @@ interface Client extends WebSocket {
   subs: Set<number>
 }
 
-// metricId -> подписчики
 const channels = new Map<number, Set<Client>>()
 
 function send(ws: WebSocket, payload: unknown) {
@@ -71,7 +70,6 @@ export function initWebSocket(server: Server) {
     ws.on('error', () => cleanup(ws))
   })
 
-  // Heartbeat: убираем "мёртвые" соединения
   const interval = setInterval(() => {
     wss.clients.forEach((socket) => {
       const ws = socket as Client

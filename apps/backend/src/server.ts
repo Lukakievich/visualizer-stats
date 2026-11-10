@@ -20,10 +20,10 @@ const app: Express = express()
 const PORT = Number(process.env.PORT) || 3001
 
 // Middleware
-app.use(cors()) // TODO: ограничить: cors({ origin: 'https://фронтенд' })
+app.use(cors()) // TODO: cors({ origin: 'https://frontendlink' })
 app.use(express.json())
 
-// Логирование запросов
+// Logs
 app.use((req: Request, _res: Response, next: NextFunction) => {
   console.log(`${new Date().toISOString()} ${req.method} ${req.path}`)
   next()
@@ -39,7 +39,7 @@ app.get('/health', (_req: Request, res: Response) => {
   res.json({ status: 'ok', timestamp: new Date() })
 })
 
-// 404 обработчик
+// 404
 app.use((_req: Request, res: Response) => {
   res.status(404).json({ error: 'Route not found' })
 })
